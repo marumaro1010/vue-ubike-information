@@ -15,9 +15,35 @@
 <body>
 
   <h1>YouBike 臺北市公共自行車即時資訊</h1>
-
+  <p>
+    練習 13： YouBike 臺北市公共自行車即時資訊 <br>
+    完成下列表格，並加入:
+    1. 站點名稱搜尋
+    2. 目前可用車輛 / 總停車格 的排序功能
+  </p>
+  <hr>
   <div id="app">
-
+    <div>
+      <div>
+        <div>
+          站名搜尋 <input type="text" v-model="searchStation">
+        </div>
+        <div>
+          <div>
+            目前可用車輛
+            <label> 升冪 <input type="radio" v-model="sortSelected" value="usedAsc"></label>
+            <label> 降冪 <input type="radio" v-model="sortSelected" value="usedDesc"></label>
+          </div>
+          <div>
+            總停車格
+            <label> 升冪 <input type="radio" v-model="sortSelected" value="stopAsc"></label>
+            <label> 降冪 <input type="radio" v-model="sortSelected" value="stopDesc"></label>
+          </div>
+        </div>
+      </div>
+      <button @click="reset">重置</button>
+    </div>
+    <br>
     <table class="table table-striped">
       <thead>
         <tr>
@@ -30,7 +56,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="s in ubikeStops">
+        <tr v-for="s in fiterStops">
           <td>{{ s.sno }}</td>
           <td>{{ s.sna }}</td>
           <td>{{ s.sarea }}</td>

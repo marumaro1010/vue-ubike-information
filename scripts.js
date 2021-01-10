@@ -1,7 +1,9 @@
 const vm = Vue.createApp({
     data () {
       return {
-        ubikeStops: []
+        ubikeStops: [],
+        searchStation:'',
+        sortSelected:''
       }
     },
     methods: {
@@ -17,6 +19,28 @@ const vm = Vue.createApp({
         time.push(t.substr(12, 2));
 
         return date.join("/") + ' ' + time.join(":");
+      },
+      arrangeSort(level, stops){
+        switch(level)
+        { 
+            case 'usedAsc':
+              return (stops.sort((a,b) => a.sbi - b.sbi));
+            break;
+            case 'usedDesc':
+              return (stops.sort((a,b) => b.sbi - a.sbi));
+            break;
+            case 'stopAsc':
+              return (stops.sort((a,b) => a.tot - b.tot));
+            break;
+            case 'stopDesc':
+              return (stops.sort((a,b) => b.tot - a.tot));
+            break;
+        }
+      },
+      reset()
+      {
+        this.sortSelected = '';
+        this.searchStation = '';
       }
     },
     created() {
@@ -35,6 +59,35 @@ const vm = Vue.createApp({
               // 將 json 轉陣列後存入 this.ubikeStops
               this.ubikeStops = Object.keys(res.retVal).map(key => res.retVal[key]);
           });
+    },
+    computed:
+    {
+      fiterStops:function()
+      {
+        //複製陣列
+        const copyStops = [...this.ubikeStops];
 
+        if(this.searchStation != '')
+        {
+            const defaultStops = copyStops.filter(v => v.sna.includes(this.searchStation));
+            if(this.sortSelected != '')
+            { 
+              return this.arrangeSort(this.sortSelected , defaultStops);
+            }
+            else
+            {
+              return copyStops.filter(v => v.sna.includes(this.searchStation));
+            }
+        }else
+        {
+          if(this.sortSelected  != '')
+          {
+            return this.arrangeSort(this.sortSelected, copyStops);
+          }else
+          {
+            return this.ubikeStops;
+          }
+        }
+      }
     }
 }).mount('#app');
