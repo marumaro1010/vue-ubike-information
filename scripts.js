@@ -26,7 +26,7 @@ const vm = Vue.createApp({
       arrangeSort(stops, currentSort, isSort){
         //複製陣列
         const copyStops = [...stops];
-        return (isSort == 'Desc') ? copyStops.sort((a, b) => b[currentSort] - a[currentSort])
+        return (isSort === 'Desc') ? copyStops.sort((a, b) => b[currentSort] - a[currentSort])
         : copyStops.sort((a, b) => a[currentSort] - b[currentSort]);
       },
       reset()
@@ -40,7 +40,7 @@ const vm = Vue.createApp({
       },
       nextPage()
       {
-          if(this.defaultPage  >= 10)
+          if(this.defaultPage >= 10)
           {
               alert("已經是最末頁囉^^");
               return false;
@@ -69,7 +69,7 @@ const vm = Vue.createApp({
     {
       fiterStops:function()
       {
-        if(this.searchStation != '')
+        if(this.searchStation !== '')
         {
           this.stopList = this.ubikeStops.filter(v => v.sna.includes(this.searchStation));
         }
@@ -78,7 +78,7 @@ const vm = Vue.createApp({
           this.stopList = this.ubikeStops;
         }
 
-        if(this.sortSelected != '')
+        if(this.sortSelected !== '')
         { 
           var sortArray = this.sortSelected.split("_");
           var str1 = sortArray[0];
@@ -95,7 +95,7 @@ const vm = Vue.createApp({
       },
       //從哪裡開始顯示
       start:function(){
-        if(this.defaultPage == 0)
+        if(this.defaultPage === 0)
         {
           return this.defaultPage * this.pageSize;
         }
@@ -106,7 +106,7 @@ const vm = Vue.createApp({
       },
       //從哪裡開始結束
       end:function(){
-        if(this.defaultPage == 0)
+        if(this.defaultPage === 0)
         {
           return (this.start + this.pageSize) - 1;
         }
