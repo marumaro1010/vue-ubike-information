@@ -31,19 +31,21 @@
         <div>
           <div>
             目前可用車輛
-            <label> 升冪 <input type="radio" v-model="sortSelected" value="usedAsc"></label>
-            <label> 降冪 <input type="radio" v-model="sortSelected" value="usedDesc"></label>
+            <label> 升冪 <input type="radio" v-model="sortSelected" value="sbi_Asc"></label>
+            <label> 降冪 <input type="radio" v-model="sortSelected" value="sbi_Desc"></label>
           </div>
           <div>
             總停車格
-            <label> 升冪 <input type="radio" v-model="sortSelected" value="stopAsc"></label>
-            <label> 降冪 <input type="radio" v-model="sortSelected" value="stopDesc"></label>
+            <label> 升冪 <input type="radio" v-model="sortSelected" value="tot_Asc"></label>
+            <label> 降冪 <input type="radio" v-model="sortSelected" value="tot_Desc"></label>
           </div>
         </div>
       </div>
       <button @click="reset">重置</button>
     </div>
     <br>
+    <a v-if="defaultPage > 0" href="#" @click="prevPage">上一頁</a>
+    <a href="#" @click="nextPage">下一頁</a>
     <table class="table table-striped">
       <thead>
         <tr>
@@ -56,7 +58,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="s in fiterStops">
+        <tr v-for="(s,index) in fiterStops">
           <td>{{ s.sno }}</td>
           <td>{{ s.sna }}</td>
           <td>{{ s.sarea }}</td>

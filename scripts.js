@@ -2,8 +2,11 @@ const vm = Vue.createApp({
     data () {
       return {
         ubikeStops: [],
+        stopList:[],
         searchStation:'',
-        sortSelected:''
+        sortSelected:'',
+        defaultPage:0,
+        size:10,
       }
     },
     methods: {
@@ -20,27 +23,29 @@ const vm = Vue.createApp({
 
         return date.join("/") + ' ' + time.join(":");
       },
-      arrangeSort(level, stops){
-        switch(level)
-        { 
-            case 'usedAsc':
-              return (stops.sort((a,b) => a.sbi - b.sbi));
-            break;
-            case 'usedDesc':
-              return (stops.sort((a,b) => b.sbi - a.sbi));
-            break;
-            case 'stopAsc':
-              return (stops.sort((a,b) => a.tot - b.tot));
-            break;
-            case 'stopDesc':
-              return (stops.sort((a,b) => b.tot - a.tot));
-            break;
-        }
+      arrangeSort(stops, currentSort, isSort){
+        //複製陣列
+        const copyStops = [...stops];
+        return (isSort == 'Desc') ? copyStops.sort((a, b) => b[currentSort] - a[currentSort])
+        : copyStops.sort((a, b) => a[currentSort] - b[currentSort]);
       },
       reset()
       {
         this.sortSelected = '';
         this.searchStation = '';
+      },
+      prevPage()
+      {
+          this.defaultPage--;
+      },
+      nextPage()
+      {
+          if(this.defaultPage  >= 10)
+          {
+              alert("已經是最末頁囉^^");
+              return false;
+          }
+          this.defaultPage++;
       }
     },
     created() {
@@ -64,29 +69,50 @@ const vm = Vue.createApp({
     {
       fiterStops:function()
       {
-        //複製陣列
-        const copyStops = [...this.ubikeStops];
-
         if(this.searchStation != '')
         {
-            const defaultStops = copyStops.filter(v => v.sna.includes(this.searchStation));
-            if(this.sortSelected != '')
-            { 
-              return this.arrangeSort(this.sortSelected , defaultStops);
-            }
-            else
-            {
-              return copyStops.filter(v => v.sna.includes(this.searchStation));
-            }
-        }else
+          this.stopList = this.ubikeStops.filter(v => v.sna.includes(this.searchStation));
+        }
+        else
         {
-          if(this.sortSelected  != '')
-          {
-            return this.arrangeSort(this.sortSelected, copyStops);
-          }else
-          {
-            return this.ubikeStops;
-          }
+          this.stopList = this.ubikeStops;
+        }
+
+        if(this.sortSelected != '')
+        { 
+          var sortArray = this.sortSelected.split("_");
+          var str1 = sortArray[0];
+          var str2 = sortArray[1];
+          this.stopList = this.arrangeSort(this.stopList, str1, str2);
+        }
+
+        return this.stopList.slice(this.start, this.end);
+      },
+      //每一頁40筆資料
+      pageSize:function()
+      {
+          return Math.floor(this.ubikeStops.length / this.size);
+      },
+      //從哪裡開始顯示
+      start:function(){
+        if(this.defaultPage == 0)
+        {
+          return this.defaultPage * this.pageSize;
+        }
+        else
+        {
+          return (this.defaultPage * this.pageSize) - 1;
+        }
+      },
+      //從哪裡開始結束
+      end:function(){
+        if(this.defaultPage == 0)
+        {
+          return (this.start + this.pageSize) - 1;
+        }
+        else
+        {
+          return (this.start + this.pageSize);
         }
       }
     }
