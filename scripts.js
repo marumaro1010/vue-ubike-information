@@ -5,6 +5,7 @@ const vm = Vue.createApp({
         stopList:[],
         searchStation:'',
         sortSelected:'',
+        tempList:[],
         defaultPage:0,
         size:10,
       }
@@ -40,7 +41,7 @@ const vm = Vue.createApp({
       },
       nextPage()
       {
-          if(this.defaultPage >= 10)
+          if(this.defaultPage >= this.totalPage)
           {
               alert("已經是最末頁囉^^");
               return false;
@@ -86,12 +87,16 @@ const vm = Vue.createApp({
           this.stopList = this.arrangeSort(this.stopList, str1, str2);
         }
 
-        return this.stopList.slice(this.start, this.end);
+        return this.stopList;
+      },
+      pageFiter:function()
+      {
+        return this.fiterStops.slice(this.start, this.end);
       },
       //每一頁40筆資料
       pageSize:function()
       {
-          return Math.floor(this.ubikeStops.length / this.size);
+          return Math.floor(this.totalData.length / this.size);
       },
       //從哪裡開始顯示
       start:function(){
@@ -114,6 +119,17 @@ const vm = Vue.createApp({
         {
           return (this.start + this.pageSize);
         }
+      },
+      totalPage:function(){
+        return Math.floor(this.totalData.length / this.pageSize);
+      },
+      totalData:function(){
+          if(this.fiterStops != "undefined"){
+            return this.fiterStops;
+          }
+          else{
+            return this.ubikeStops;
+          }
       }
     }
 }).mount('#app');
