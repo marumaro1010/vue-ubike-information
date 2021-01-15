@@ -46,6 +46,8 @@
     <br>
     <a v-if="defaultPage > 0" href="#" @click="prevPage">上一頁</a>
     <a href="#" @click="nextPage">下一頁</a>
+
+    <p>共 {{ totalPage + 1}} 頁，目前第 {{ defaultPage + 1 }} 頁
     <table class="table table-striped">
       <thead>
         <tr>
@@ -58,7 +60,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(s,index) in fiterStops">
+        <tr v-for="(s,index) in pageFiter">
           <td>{{ s.sno }}</td>
           <td>{{ s.sna }}</td>
           <td>{{ s.sarea }}</td>
