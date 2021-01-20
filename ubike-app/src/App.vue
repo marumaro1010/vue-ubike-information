@@ -1,19 +1,21 @@
 <template>
   <div id="app">
-    <search/>
+    <search @searchName="updateSearchName"
+      :searchStation="searchStation"
+    ></search>
     <table class="table table-striped">
       <thead>
         <tr>
           <th>#</th>
           <th>場站名稱</th>
           <th>場站區域</th>
-          <th>目前可用車輛</th>
-          <th>總停車格</th>
+          <th><a href="#" @click="setSort('sbi')">目前可用車輛</a></th>
+          <th><a href="#" @click="setSort('tot')">總停車格</a></th>
           <th>資料更新時間</th>
         </tr>
       </thead>
       <tbody>
-        <ubike-table v-for="s in ubikeStops" 
+        <ubike-table v-for="s in sortStops" 
           :key="s.sno"
           :sno="s.sno"
           :sna="s.sna"
@@ -42,13 +44,14 @@ export default {
   },
   data(){
     return{
-        ubikeStops: [],
-        stopList:[],
+        ubikeStops:[],
         searchStation:'',
         sortSelected:'',
         tempList:[],
         defaultPage:0,
         size:10,
+        sortType:'',
+        isDesc:false
     }
   },
   created(){
@@ -67,7 +70,37 @@ export default {
             this.ubikeStops = Object.keys(res.retVal).map(key => res.retVal[key]);
       });
   },
+  computed:{
+    fliterStops(){
+        let stopList = [];
+        if(this.searchStation)
+        {
+            stopList = this.ubikeStops.filter(v => v.sna.includes(this.searchStation));
+        }
+        else
+        {
+            stopList = this.ubikeStops;
+        }
+        return stopList;
+    },
+    sortStops(){
+        let fliterStops = this.fliterStops;
+        let sortType = this.sortType;
+        let isSortDesc = this.isDesc;
+
+        return isSortDesc
+        ? fliterStops.sort((a, b) => b[sortType] - a[sortType])
+        : fliterStops.sort((a, b) => a[sortType] - b[sortType]);
+    }
+  },
   methods:{
+      updateSearchName(val){
+          this.searchStation = val;
+      },
+      setSort(val){
+        this.sortType = val;
+        this.isDesc = !this.isDesc;
+      },
       timeFormat(t){
 
         var date = [], time = [];
@@ -81,7 +114,7 @@ export default {
 
         return date.join("/") + ' ' + time.join(":");
       }
-  }
+  },
 }
 </script>
 
