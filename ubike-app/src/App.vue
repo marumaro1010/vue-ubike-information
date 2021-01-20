@@ -1,8 +1,17 @@
 <template>
   <div id="app">
-    <search @searchName="updateSearchName"
+    <search
+      @searchName="updateSearchName"
       :searchStation="searchStation"
     ></search>
+    <span>◀</span>
+    <pagination v-for="count in totalPage"
+      :key="count"
+      :count="count"
+      :currentPage="currentPage"
+    />
+    <span>▶</span>
+    <p>共 {{ totalPage }} 頁</p>
     <table class="table table-striped">
       <thead>
         <tr>
@@ -26,7 +35,6 @@
         ></ubike-table>
       </tbody>
     </table>
-    <pagination />
   </div>
 </template>
 
@@ -48,8 +56,8 @@ export default {
         searchStation:'',
         sortSelected:'',
         tempList:[],
-        defaultPage:0,
-        size:10,
+        currentPage:1,
+        perPage:40,
         sortType:'',
         isDesc:false
     }
@@ -91,6 +99,10 @@ export default {
         return isSortDesc
         ? fliterStops.sort((a, b) => b[sortType] - a[sortType])
         : fliterStops.sort((a, b) => a[sortType] - b[sortType]);
+    },
+    totalPage(){
+        let sortStops = this.sortStops;
+        return Math.floor(sortStops.length / this.perPage);
     }
   },
   methods:{
