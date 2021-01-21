@@ -1,17 +1,16 @@
 <template>
   <div id="app">
     <search
-      @searchName="updateSearchName"
+      @receiveSearchName="updateSearchName"
       :searchStation="searchStation"
     ></search>
-    <span>◀</span>
     <pagination v-for="count in totalPage"
+      @receiveCurrentPage="updateCurrentPage"
       :key="count"
       :count="count"
       :currentPage="currentPage"
     />
-    <span>▶</span>
-    <p>共 {{ totalPage }} 頁</p>
+    <p>共 {{ totalPage }} 頁 , 目前頁數 {{ currentPage }}</p>
     <table class="table table-striped">
       <thead>
         <tr>
@@ -78,9 +77,16 @@ export default {
             this.ubikeStops = Object.keys(res.retVal).map(key => res.retVal[key]);
       });
   },
+  watch:{
+    //有搜尋變動,回初始值第一頁
+    searchStation:function(){
+      this.currentPage = 1;
+    }
+  },
   computed:{
     fliterStops(){
         let stopList = [];
+
         if(this.searchStation)
         {
             stopList = this.ubikeStops.filter(v => v.sna.includes(this.searchStation));
@@ -92,7 +98,7 @@ export default {
         return stopList;
     },
     sortStops(){
-        let fliterStops = this.fliterStops;
+        let fliterStops = this.fliterStops.slice(this.start, this.end);
         let sortType = this.sortType;
         let isSortDesc = this.isDesc;
 
@@ -100,9 +106,15 @@ export default {
         ? fliterStops.sort((a, b) => b[sortType] - a[sortType])
         : fliterStops.sort((a, b) => a[sortType] - b[sortType]);
     },
+    start(){
+      return (this.currentPage - 1) * this.perPage;
+    },
+    end(){
+      return this.start + this.perPage;
+    },
     totalPage(){
-        let sortStops = this.sortStops;
-        return Math.floor(sortStops.length / this.perPage);
+        let fliterStops = this.fliterStops;
+        return Math.ceil(fliterStops.length / this.perPage);
     }
   },
   methods:{
@@ -125,6 +137,9 @@ export default {
         time.push(t.substr(12, 2));
 
         return date.join("/") + ' ' + time.join(":");
+      },
+      updateCurrentPage(currentPage){
+        this.currentPage = currentPage;
       }
   },
 }

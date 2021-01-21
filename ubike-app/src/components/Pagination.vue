@@ -1,5 +1,7 @@
 <template>
-    <span>{{ count }}</span>
+    <span class="pageSpan">
+        <span v-if="count == currentPage">【</span><a href="#" @click="selectCurrentPage(count)">{{ count }}</a><span v-if="count == currentPage">】</span>
+    </span>
 </template>
 <script>
 export default {
@@ -7,6 +9,11 @@ export default {
         count:Number,
         currentPage:Number
     },
+    methods:{
+        selectCurrentPage(count){
+            this.$emit('receiveCurrentPage', count);
+        }
+    }
 }
 </script>
 <style scoped>
@@ -15,11 +22,11 @@ export default {
 	font-size:12;
 	text-align:center;
 }
-span{
+.pageSpan{
     cursor: pointer;
     margin-left:10px;
 }
-.page-current{
+.pagecurrent{
     color:red;
 }
 </style>

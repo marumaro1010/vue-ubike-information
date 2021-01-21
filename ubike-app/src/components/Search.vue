@@ -18,7 +18,7 @@ export default {
     },
     watch:{
         inputStation:function(val){
-           this.$emit('searchName', val);
+           this.$emit('receiveSearchName', val);
         },
     }
 }
