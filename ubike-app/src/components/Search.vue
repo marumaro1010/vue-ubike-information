@@ -1,24 +1,26 @@
 <template>
     <div>
         <div>
-          站名搜尋 <input type="text" v-model="inputStation">
+          站名搜尋 <input type="text" v-model="searchStation">
         </div>
     </div>
 </template>
 <script>
 export default {
     name:"Search",
-    props:{
-        searchStation:String
-    },
     data(){
         return {
-            inputStation:this.searchStation
         }
     },
-    watch:{
-        inputStation:function(val){
-           this.$emit('receiveSearchName', val);
+    computed :{
+        searchStation:{
+           get:function(){
+               return this.searchStation;
+           },
+           set:function(val){
+                this.$emit('receiveSearchName', val);
+           }
+           
         },
     }
 }

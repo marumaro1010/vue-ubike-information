@@ -2,23 +2,20 @@
   <div id="app">
     <search
       @receiveSearchName="updateSearchName"
-      :searchStation="searchStation"
     ></search>
-    <pagination v-for="count in totalPage"
+    <pagination
       @receiveCurrentPage="updateCurrentPage"
-      :key="count"
-      :count="count"
+      :totalPage="totalPage"
       :currentPage="currentPage"
     />
-    <p>共 {{ totalPage }} 頁 , 目前頁數 {{ currentPage }}</p>
     <table class="table table-striped">
       <thead>
         <tr>
           <th>#</th>
           <th>場站名稱</th>
           <th>場站區域</th>
-          <th><a href="#" @click="setSort('sbi')">目前可用車輛</a></th>
-          <th><a href="#" @click="setSort('tot')">總停車格</a></th>
+          <th><a :class="getSortSbiClass" href="#" @click="setSort('sbi')">目前可用車輛</a></th>
+          <th><a :class="getSortTotClass" href="#" @click="setSort('tot')">總停車格</a></th>
           <th>資料更新時間</th>
         </tr>
       </thead>
@@ -58,7 +55,8 @@ export default {
         currentPage:1,
         perPage:40,
         sortType:'',
-        isDesc:false
+        isDesc:false,
+
     }
   },
   created(){
@@ -84,6 +82,32 @@ export default {
     }
   },
   computed:{
+    getSortSbiClass(){
+        let sortType = this.sortType;
+        let isSortDesc = this.isDesc;
+        if(sortType == 'sbi')
+        {
+          return isSortDesc
+          ? {'defaultSort':true,'upSort':true,'downSort':false}
+          : {'defaultSort':true,'upSort':false,'downSort':true}
+        }
+        else{
+          return {'defaultSort':true,'upSort':false,'downSort':false}
+        }
+    },
+    getSortTotClass(){
+        let sortType = this.sortType;
+        let isSortDesc = this.isDesc;
+        if(sortType == 'tot')
+        {
+          return isSortDesc
+          ? {'defaultSort':true,'upSort':true,'downSort':false}
+          : {'defaultSort':true,'upSort':false,'downSort':true}
+        }
+        else{
+          return {'defaultSort':true,'upSort':false,'downSort':false}
+        }
+    },
     fliterStops(){
         let stopList = [];
 
@@ -154,4 +178,14 @@ export default {
   color: #2c3e50;
   margin-top: 60px;
 }
+.defaultSort::after {
+  content: '(-)';
+}
+.upSort::after {
+  content: '⏫';
+}
+.downSort::after {
+  content: '⏬';
+}
+
 </style>
