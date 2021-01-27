@@ -1,7 +1,7 @@
 <template>
     <div>
         <div>
-          站名搜尋 <input type="text" v-model="searchStation">
+          站名搜尋 <input type="text" v-model="search">
         </div>
     </div>
 </template>
@@ -13,12 +13,12 @@ export default {
         }
     },
     computed :{
-        searchStation:{
-           get:function(){
-               return this.searchStation;
+        search:{
+           get(){
+               return this.$store.state.searchStation;
            },
-           set:function(val){
-                this.$emit('receiveSearchName', val);
+           set(val){
+               this.$store.commit('setSearchName', val); 
            }
            
         },

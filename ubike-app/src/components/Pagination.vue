@@ -10,15 +10,16 @@
 export default {
     props:{
         totalPage:Number,
-        currentPage:Number
     },
     data(){
         return{
-            isActive : false
+            isActive:false
         }
     },
     computed:{
-
+        currentPage(){
+            return this.$store.state.currentPage
+        }
     },
     methods:{
         selectCurrentPage(count){

@@ -6,7 +6,6 @@
     <pagination
       @receiveCurrentPage="updateCurrentPage"
       :totalPage="totalPage"
-      :currentPage="currentPage"
     />
     <table class="table table-striped">
       <thead>
@@ -48,106 +47,65 @@ export default {
   },
   data(){
     return{
-        ubikeStops:[],
-        searchStation:'',
-        sortSelected:'',
-        tempList:[],
-        currentPage:1,
-        perPage:40,
-        sortType:'',
-        isDesc:false,
-
     }
   },
   created(){
-      // 欄位說明請參照:
-      // http://data.taipei/opendata/datalist/datasetMeta?oid=8ef1626a-892a-4218-8344-f7ac46e1aa48
-
-      // sno：站點代號、 sna：場站名稱(中文)、 tot：場站總停車格、
-      // sbi：場站目前車輛數量、 sarea：場站區域(中文)、 mday：資料更新時間、
-      // lat：緯度、 lng：經度、 ar：地(中文)、 sareaen：場站區域(英文)、
-      // snaen：場站名稱(英文)、 aren：地址(英文)、 bemp：空位數量、 act：全站禁用狀態
-
-      fetch('https://tcgbusfs.blob.core.windows.net/blobyoubike/YouBikeTP.gz')
-        .then(res => res.json())
-        .then(res => {
-            // 將 json 轉陣列後存入 this.ubikeStops
-            this.ubikeStops = Object.keys(res.retVal).map(key => res.retVal[key]);
-      });
+    this.$store.dispatch('fetchLocations');
   },
   watch:{
     //有搜尋變動,回初始值第一頁
     searchStation:function(){
-      this.currentPage = 1;
+      this.$store.state.currentPage = 1;
     }
   },
   computed:{
-    getSortSbiClass(){
-        let sortType = this.sortType;
-        let isSortDesc = this.isDesc;
-        if(sortType == 'sbi')
-        {
-          return isSortDesc
-          ? {'defaultSort':true,'upSort':true,'downSort':false}
-          : {'defaultSort':true,'upSort':false,'downSort':true}
+      getSortSbiClass:{
+        get(){
+          return this.$store.getters.getSortSbiClass;
+        },
+        set(value){
+          this.$store.commit('setSortType', value);
         }
-        else{
-          return {'defaultSort':true,'upSort':false,'downSort':false}
+      },
+      getSortTotClass:{
+        get(){
+          return this.$store.getters.getSortTotClass;
+        },
+        set(value){
+          this.$store.commit('setSortType', value);
         }
-    },
-    getSortTotClass(){
-        let sortType = this.sortType;
-        let isSortDesc = this.isDesc;
-        if(sortType == 'tot')
-        {
-          return isSortDesc
-          ? {'defaultSort':true,'upSort':true,'downSort':false}
-          : {'defaultSort':true,'upSort':false,'downSort':true}
+      },
+      setIsDesc:{
+        get(){
+          return this.$store.state.isDesc;
+        },
+        set(value){
+          this.$store.commit('setIsDesc', value);
         }
-        else{
-          return {'defaultSort':true,'upSort':false,'downSort':false}
-        }
-    },
-    fliterStops(){
-        let stopList = [];
-
-        if(this.searchStation)
-        {
-            stopList = this.ubikeStops.filter(v => v.sna.includes(this.searchStation));
-        }
-        else
-        {
-            stopList = this.ubikeStops;
-        }
-        return stopList;
-    },
-    sortStops(){
-        let fliterStops = this.fliterStops.slice(this.start, this.end);
-        let sortType = this.sortType;
-        let isSortDesc = this.isDesc;
-
-        return isSortDesc
-        ? fliterStops.sort((a, b) => b[sortType] - a[sortType])
-        : fliterStops.sort((a, b) => a[sortType] - b[sortType]);
-    },
-    start(){
-      return (this.currentPage - 1) * this.perPage;
-    },
-    end(){
-      return this.start + this.perPage;
-    },
-    totalPage(){
-        let fliterStops = this.fliterStops;
-        return Math.ceil(fliterStops.length / this.perPage);
-    }
+      },
+      fliterStops(){
+        return this.$store.getters.fliterStops;
+      },
+      sortStops(){
+        return this.$store.getters.sortStops;
+      },
+      start(){
+        return this.$store.getters.start;
+      },
+      end(){
+        return this.$store.getters.end;
+      },
+      totalPage(){
+        return this.$store.getters.totalPage;
+      }
   },
   methods:{
       updateSearchName(val){
           this.searchStation = val;
       },
       setSort(val){
-        this.sortType = val;
-        this.isDesc = !this.isDesc;
+        this.getSortSbiClass = val;
+        this.setIsDesc = !this.setIsDesc;
       },
       timeFormat(t){
 
@@ -163,7 +121,7 @@ export default {
         return date.join("/") + ' ' + time.join(":");
       },
       updateCurrentPage(currentPage){
-        this.currentPage = currentPage;
+        this.$store.state.currentPage = currentPage;
       }
   },
 }
